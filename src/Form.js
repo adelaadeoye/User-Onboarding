@@ -8,10 +8,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { withFormik, Form, Field } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
 function Copyright() {
   return (
@@ -42,7 +44,7 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
-  form: {
+  Form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(3),
   },
@@ -51,7 +53,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function SignUp() {
+ function SignUp({ values, errors, touched, status }) {
   const classes = useStyles();
 
   return (
@@ -64,53 +66,32 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} noValidate>
+        <Form >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              />
+              < Field type= "text" name="fName" placeholder="First Name"/>
+              {touched.fName && errors.fName && (
+          <p className="error">{errors.fName}</p>
+        )}
+           
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-              />
+            <Field type= "text" name="lName" placeholder="Last Name"/>
+              {touched.lName && errors.lName && (
+          <p className="error">{errors.lName}</p>
+        )} 
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
+            <Field type= "email" name="email" placeholder="xyz@g.com"/>
+            {touched.email && errors.email && (
+          <p className="error">{errors.email}</p>
+        )} 
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
+            <Field type= "password" name="password" placeholder="*******"/>
+            {touched.password && errors.password && (
+          <p className="error">{errors.password}</p> 
+        )}
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
@@ -135,11 +116,26 @@ export default function SignUp() {
               </Link>
             </Grid>
           </Grid>
-        </form>
+        </Form>
       </div>
       <Box mt={5}>
         <Copyright />
       </Box>
     </Container>
   );
-}
+};
+const  FormikMemberForm = withFormik({
+    mapPropsToValues ({fName,lName, email, password}){
+        return {
+            fName: fName|| "",
+            lName: lName||"",
+            email: email||"",
+            password:password||""
+        };
+    },
+    validationSchema: Yup.object().shape({
+        fName: Yup.string().required("You must put a First Name"),
+        email: Yup.string().required()
+      }),
+})(SignUp);
+export default FormikMemberForm;
